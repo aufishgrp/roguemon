@@ -28,14 +28,14 @@ test:
 	go test `go list $(GO_TESTS) | egrep -v "vendor|$(APP_NAME)/cmd/integration"`
 
 test-docker:
-	## Uses the localalized deploymen image to run unit tests.
+	## Uses the localalized deployman image to run unit tests.
 	@echo "Building docker compatible binary."
 	APP_NAME=${APP_NAME} \
 	docker run \
 		--rm=true \
 		-v $(shell pwd):/go/src/github.com/${GITHUB_DOMAIN}/${APP_NAME} \
 		-w /go/src/github.com/${GITHUB_DOMAIN}/${APP_NAME} \
-		${DOCKER_DOMAIN}/deploymen:${APP_NAME} test
+		${DOCKER_DOMAIN}/deployman:${APP_NAME} test
 
 lint:
 	_deployman/bin/make-lint.sh
@@ -49,7 +49,7 @@ dev-env:
 		-w /go/src/github.com/${GITHUB_DOMAIN}/${APP_NAME} \
 		--name devenv_${APP_NAME} \
 		-d \
-		${DOCKER_DOMAIN}/deploymen:${APP_NAME}
+		${DOCKER_DOMAIN}/deployman:${APP_NAME}
 
 docker: docker-prod
 
@@ -62,29 +62,29 @@ docker-prod: docker-binary
 		-f _deployman/src/Dockerfile.deploy \
 		.
 
-docker-binary: docker-deploymen
-	## Uses the localalized deploymen image to build a docker compatible binary.
+docker-binary: docker-deployman
+	## Uses the localalized deployman image to build a docker compatible binary.
 	@echo "Building docker compatible binary."
 	APP_NAME=${APP_NAME} \
 	docker run \
 		--rm=true \
 		-v $(shell pwd):/go/src/github.com/${GITHUB_DOMAIN}/${APP_NAME} \
 		-w /go/src/github.com/${GITHUB_DOMAIN}/${APP_NAME} \
-		${DOCKER_DOMAIN}/deploymen:${APP_NAME} build
+		${DOCKER_DOMAIN}/deployman:${APP_NAME} build
 
-docker-deploymen:
-	## Builds a base deploymen image if one does not already exist on the system.
-	@echo "Possibly building deploymen image."
-	if [ -z "`docker images -q ${DOCKER_DOMAIN}/deploymen:${APP_NAME}`" ]; then \
-		echo "Building deploymen image."; \
+docker-deployman:
+	## Builds a base deployman image if one does not already exist on the system.
+	@echo "Possibly building deployman image."
+	if [ -z "`docker images -q ${DOCKER_DOMAIN}/deployman:${APP_NAME}`" ]; then \
+		echo "Building deployman image."; \
 		docker build \
-			-t ${DOCKER_DOMAIN}/deploymen:${APP_NAME} \
+			-t ${DOCKER_DOMAIN}/deployman:${APP_NAME} \
 			-f _deployman/src/Dockerfile.devel \
 			.; \
 	else \
-		echo "Base deploymen image exists."; \
+		echo "Base deployman image exists."; \
 	fi
 
 docker-clean:
 	## Deletes the
-	docker image rm ${DOCKER_DOMAIN}/deploymen:${APP_NAME} ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION}
+	docker image rm ${DOCKER_DOMAIN}/deployman:${APP_NAME} ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION}
