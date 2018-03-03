@@ -1,0 +1,31 @@
+---
+sudo: required
+services:
+  - docker
+
+language: go
+
+go:
+  - 1.10
+
+git:
+  depth: 10
+
+before_install:
+  - env | sort
+  - git --no-pager log --graph --decorate --oneline -25
+
+install:
+  - make tools
+
+before_script:
+  - export APP_NAME=`basename ${PWD}`
+  - docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"
+
+script:
+  - make lint
+  - make build
+  - make test
+
+after_success:
+  - make ci

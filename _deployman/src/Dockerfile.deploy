@@ -1,0 +1,9 @@
+ARG BASE_IMAGE=alpine:latest
+FROM alpine
+
+ARG APP_NAME
+ENV APP_NAME=${APP_NAME:-unknown}
+
+COPY ${APP_NAME} /usr/local/bin/${APP_NAME}
+
+ENTRYPOINT "${APP_NAME}"
