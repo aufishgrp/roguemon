@@ -21,6 +21,9 @@ tools:
 	_deployman/bin/make-tools.sh
 	## TODO: Add application specific tool install code here.	
 
+ci:
+	_deployman/bin/ci-logic.sh
+
 test:
 	go test `go list $(GO_TESTS) | egrep -v "vendor|$(APP_NAME)/cmd/integration"`
 
