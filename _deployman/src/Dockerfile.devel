@@ -1,0 +1,13 @@
+ARG BASE_IMAGE=golang:1.10-alpine
+FROM ${BASE_IMAGE}
+
+COPY _deployman /opt/deployman/_deployman
+COPY Makefile /opt/deployman/Makefile
+
+WORKDIR /opt/deployman
+
+RUN apk add --no-cache make bash
+RUN make tools
+
+ENTRYPOINT ["make"]
+CMD ["build"]
