@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEPLOYMAN_COMMIT_TAG=${DEPLOYMAN_COMMIT_TAG:-`cat _deployman/etc/travis-tag`}
+DEPLOYMAN_COMMIT_TAG=${DEPLOYMAN_COMMIT_TAG:-"`cat _deployman/etc/travis-tag`"}
 
 APP_VERSION=`_deployman/bin/app-version.sh`
 LAST_VERSION=`git describe --tags --abbrev=0`
@@ -14,7 +14,6 @@ fi
 echo "Version history ${LAST_VERSION} | ${APP_VERSION} | ${NEW_VERSION}"
 
 function create_release_notes(){
-  set_last_version
   RELEASE_NOTES=`git log ${LAST_VERSION}.. --pretty=format:"<li><a href='http://github.com/${GITHUB_DOMAIN}/${APP_NAME}/commit/%H'>view commit &bull;</a>%s</li>" --reverse --no-merges -i --invert-grep --grep="${DEPLOYMAN_COMMIT_TAG}"`
 }
 
@@ -38,10 +37,11 @@ function reconcile_dev(){
     git remote add ci-build https://${GITHUB_KEY}@github.com/${GITHUB_DOMAIN}/${APP_NAME}.git > /dev/null 2>&1
     git checkout master
     git pull
-    cat "${APP_VERSION}" > APP_VERSION
+    echo "${APP_VERSION}" > APP_VERSION
     git add APP_VERSION
     git commit -m "${DEPLOYMAN_COMMIT_TAG} - Update version"
     git push --quiet --set-upstream ci-build master
+    git pull
     git checkout dev
     git pull
     git merge master
