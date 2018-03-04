@@ -21,5 +21,5 @@ The user/group that owns the github account for this app.
 ### GITHUB_KEY
 The github key to use when publishing tags to github.
 
-### DEPLOYAGO_COMMIT_TAG
+### DEPLOYMAN_COMMIT_TAG
 Prefix to use when making automated commits. Commits that contain with this value are excluded when determining the app version. Highly reccomended that this value not change once set. Defaults to the contents of _deployman/etc/travis-tag.

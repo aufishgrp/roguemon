@@ -19,13 +19,11 @@ function create_release_notes(){
 }
 
 function create_release_notes_json(){
-  set_version
   create_release_notes
   RELEASE_NOTES_JSON="{\"tag_name\":\"${APP_VERSION}\", \"name\":\"${APP_VERSION}\", \"target_commitish\":\"master\", \"draft\":false, \"prerelease\":false, \"body\":\"${RELEASE_NOTES}\"}"
 }
 
 function create_tag(){
-  set_version
   echo "Creating release ${APP_VERSION}"
 
   create_release_notes_json
@@ -37,14 +35,17 @@ function reconcile_dev(){
     #   1: Update the version file.
     #   2: Commit the result to master and update dev with master
     #   3: Push
+    git remote add ci-build https://${GITHUB_KEY}@github.com/${GITHUB_DOMAIN}/${APP_NAME}.git > /dev/null 2>&1
     git checkout master
+    git pull
     cat "${APP_VERSION}" > APP_VERSION
     git add APP_VERSION
     git commit -m "${DEPLOYMAN_COMMIT_TAG} - Update version"
-    git push
+    git push --quiet --set-upstream ci-build master
     git checkout dev
+    git pull
     git merge master
-    git push
+    git push --quiet --set-upstream ci-build dev
     git checkout master
 }
 

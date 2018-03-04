@@ -16,6 +16,7 @@ before_install:
   - git --no-pager log --graph --decorate --oneline -25
 
 install:
+  - apt-get install httpie
   - make tools
 
 before_script:
