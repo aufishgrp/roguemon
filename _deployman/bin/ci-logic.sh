@@ -2,6 +2,8 @@
 
 DEPLOYMAN_COMMIT_TAG=${DEPLOYMAN_COMMIT_TAG:-"`cat _deployman/etc/commit-tag`"}
 
+echo "COMMITTAG ${DEPLOYMAN_COMMIT_TAG}"
+
 APP_VERSION=`_deployman/bin/app-version.sh`
 LAST_VERSION=`git describe --tags --abbrev=0`
 
