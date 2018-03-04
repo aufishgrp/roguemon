@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEPLOYMAN_COMMIT_TAG=${DEPLOYMAN_COMMIT_TAG:-"`cat _deployman/etc/travis-tag`"}
+DEPLOYMAN_COMMIT_TAG=${DEPLOYMAN_COMMIT_TAG:-"`cat _deployman/etc/commit-tag`"}
 
 APP_VERSION=`_deployman/bin/app-version.sh`
 LAST_VERSION=`git describe --tags --abbrev=0`
