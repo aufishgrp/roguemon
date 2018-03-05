@@ -60,3 +60,6 @@ go_lint(){
 }
 
 goimports && go_fmt && go_vet && go_lint
+if [ $? -ne 0 ]; then
+	exit 1
+fi
