@@ -12,14 +12,31 @@ Gopkg.toml:
 	dep init
 
 publish: docker-prod
+	docker push ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION_2}
 	docker push ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION}
 
 deploy:
 	## TODO: Add logic here that deploys the application.
 
-tools:
-	_deployman/bin/make-tools.sh
-	## TODO: Add application specific tool install code here.	
+tools: tools-$(PLATFORM)
+	go get -u golang.org/x/tools/cmd/goimports
+	go get -u golang.org/x/lint/golint
+	go get -u google.golang.org/grpc
+	go get -u github.com/golang/protobuf/protoc-gen-go
+	go get -u github.com/mattn/goveralls
+
+tools-apk: tools-apk-curl tools-src-dep
+
+tools-apt: tools-src-dep
+
+tools-brew:
+	brew install go dep
+
+tools-apk-curl:
+	apk add --no-cache curl
+
+tools-src-dep:
+	curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
 
 ci:
 	_deployman/bin/ci-logic.sh
@@ -41,7 +58,7 @@ lint:
 	_deployman/bin/make-lint.sh
 
 dev-env:
-	## Creates a dev-env style docker container that can be used for development.
+	## Creates a vm style docker container that can be used for development.
 	docker run \
 		-ti \
 		--entrypoint bash \
@@ -59,7 +76,7 @@ docker-prod: docker-binary
 	docker build \
 		--build-arg APP_NAME=${APP_NAME} \
 		-t ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION} \
-		-t ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION2} \
+		-t ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION_2} \
 		-f _deployman/src/Dockerfile.deploy \
 		.
 
@@ -88,4 +105,4 @@ docker-deployman:
 
 docker-clean:
 	## Deletes the
-	docker image rm ${DOCKER_DOMAIN}/deployman:${APP_NAME} ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION}
+	docker image rm ${DOCKER_DOMAIN}/deployman:${APP_NAME} ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION_2} ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION}

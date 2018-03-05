@@ -2,7 +2,7 @@
 
 DEPLOYMAN_COMMIT_TAG=${DEPLOYMAN_COMMIT_TAG:-"`cat _deployman/etc/commit-tag`"}
 
-APP_VERSION=`_deployman/bin/app-version.sh`
+APP_VERSION=`_deployman/bin/commands.sh app-version`
 LAST_VERSION=`git describe --tags --abbrev=0`
 
 if [ "`git rev-list ${APP_VERSION} 2>/dev/null`" ]; then

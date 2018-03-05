@@ -3,6 +3,7 @@ FROM ${BASE_IMAGE}
 
 COPY _deployman /opt/deployman/_deployman
 COPY Makefile /opt/deployman/Makefile
+COPY .common.mk /opt/deployman/.common.mk
 
 WORKDIR /opt/deployman
 
