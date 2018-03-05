@@ -58,8 +58,7 @@ function reconcile_dev(){
 
 if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
   ## Always publish
-  
-  #make publish
+  make publish
   if [ $? -ne 0 ]; then
     echo "Failed to publish"
     exit 1
