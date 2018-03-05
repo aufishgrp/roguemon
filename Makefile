@@ -26,7 +26,8 @@ tools: tools-$(PLATFORM)
 	go get -u github.com/mattn/goveralls
 
 tools-apk: tools-apk-curl tools-src-dep
-
+	apk add --no-cache git
+	
 tools-apt: tools-src-dep
 
 tools-brew:
