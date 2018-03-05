@@ -27,7 +27,7 @@ tools: tools-$(PLATFORM)
 
 tools-apk: tools-apk-curl tools-src-dep
 	apk add --no-cache git
-	
+
 tools-apt: tools-src-dep
 
 tools-brew:

@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+XARG_ARG_FLAG=-L
+if [ "apk" == "`_deployman/bin/commands.sh platform`" ]; then
+	XARG_ARG_FLAG=-n
+fi
+
 goimports(){
 	if [ -f goimports-out ]; then rm goimports-out; fi
 
@@ -10,13 +15,13 @@ goimports(){
 		| xargs goimports -l \
 		>> goimports-out 2>&1
 
-	cat goimports-out && \
-		if [ -n "`cat goimports-out`" ]; then \
-			echo "Failure in goimports. Refer to goimports-out" \
-			exit 1; \
-		else \
-			rm goimports-out; \
-		fi
+	if [ -n "`cat goimports-out`" ]; then
+		echo "Failure in goimports. Refer to goimports-out"
+		echo "`cat goimports-out`"
+		exit 1
+	else
+		rm goimports-out
+	fi
 }
 
 go_fmt(){
@@ -27,14 +32,15 @@ go_fmt(){
 		| xargs go fmt \
 		>> lint-out 2>&1
 
-	cat lint-out && \
-		if [ -n "`cat lint-out`" ]; then \
-			echo "Failure in go fmt. Refer to lint-out" \
-			exit 1; \
-		else \
-			rm lint-out; \
-		fi
+	if [ -n "`cat lint-out`" ]; then
+		echo "Failure in go fmt. Refer to lint-out"
+		echo "`cat lint-out`"
+		exit 1
+	else
+		rm lint-out;
+	fi
 }
+
 go_vet(){
 	find . -maxdepth 1 -type d \
 		| egrep -v "\.[a-zA-Z]+$$|vendor|\.$$" \
@@ -46,17 +52,17 @@ go_lint(){
 	
 	find . -type d \
 		| egrep -v "vendor|.glide" \
-		| xargs -L 1 golint \
+		| xargs ${XARG_ARG_FLAG} 1 golint \
 		| { egrep -v "be annoying to use|that stutters|_easyjson" || true; } \
 		>> lint-out 2>&1
 	
-	cat lint-out && \
-		if [ -n "`cat lint-out`" ]; then \
-			echo "Failure in golint. Refer to lint-out"; \
-			exit 1; \
-		else \
-			rm lint-out; \
-		fi
+	if [ -n "`cat lint-out`" ]; then
+		echo "Failure in golint. Refer to lint-out"
+		echo "`cat lint-out`"
+		exit 1
+	else
+		rm lint-out;
+	fi
 }
 
 goimports && go_fmt && go_vet && go_lint
