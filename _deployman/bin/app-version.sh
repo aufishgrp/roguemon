@@ -38,11 +38,29 @@ if [ "${TRAVIS}" == "true" ]; then
     GIT_BRANCH=${TRAVIS_BRANCH};
 fi
 
+VERSION_FORMAT="MMP"
+
+if [ "${1}" == "" ]; then
+    VERSION_FORMAT="MMP"
+elif [ "${1}" == "3" ]; then
+    VERSION_FORMAT="MMP"
+elif [ "${1}" == "2" ]; then
+    VERSION_FORMAT="MM"
+else
+    echo "Usage: app-version [2|3]"
+    exit 1
+fi
+
 if [ "${GIT_BRANCH}" == "master" ]; then
     set_major_version;
     set_minor_version;
-    set_patch_version;
-    echo "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}";
+
+    if [ "${VERSION_FORMAT}" == "MM" ]; then
+        echo "${MAJOR_VERSION}.${MINOR_VERSION}";
+    else
+        set_patch_version;
+        echo "${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}";
+    fi
 else
     echo "${GIT_BRANCH}";
 fi

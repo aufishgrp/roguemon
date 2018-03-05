@@ -2,8 +2,6 @@
 
 DEPLOYMAN_COMMIT_TAG=${DEPLOYMAN_COMMIT_TAG:-"`cat _deployman/etc/commit-tag`"}
 
-echo "COMMITTAG ${DEPLOYMAN_COMMIT_TAG}"
-
 APP_VERSION=`_deployman/bin/app-version.sh`
 LAST_VERSION=`git describe --tags --abbrev=0`
 
@@ -29,6 +27,9 @@ function create_tag(){
 
   create_release_notes_json
   echo ${RELEASE_NOTES_JSON} | http POST https://api.github.com/repos/${GITHUB_DOMAIN}/${APP_NAME}/releases Authorization:"token ${GITHUB_KEY}"
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
 }
 
 function reconcile_dev(){
@@ -36,32 +37,39 @@ function reconcile_dev(){
     #   1: Update the version file.
     #   2: Commit the result to master and update dev with master
     #   3: Push
-    git remote add ci-build https://${GITHUB_KEY}@github.com/${GITHUB_DOMAIN}/${APP_NAME}.git > /dev/null 2>&1
+    git remote add ci-build https://${GITHUB_KEY}@github.com/${GITHUB_DOMAIN}/${APP_NAME}.git > /dev/null 2>&1 && \
+    git checkout master && \
+    git pull && \
+    git add APP_VERSION && \
+    git commit -m "${DEPLOYMAN_COMMIT_TAG} - Update version" && \
+    git push --quiet --set-upstream ci-build master && \
+    git pull && \
+    git checkout dev && \
+    git pull && \
+    git merge master && \
+    git push --quiet --set-upstream ci-build dev && \
     git checkout master
-    git pull
-    echo "${APP_VERSION}" > APP_VERSION
-    git add APP_VERSION
-    git commit -m "${DEPLOYMAN_COMMIT_TAG} - Update version"
-    git push --quiet --set-upstream ci-build master
-    git pull
-    git checkout dev
-    git pull
-    git merge master
-    git push --quiet --set-upstream ci-build dev
-    git checkout master
+
+    if [ $? -ne 0 ]; then
+      exit 1
+    fi
 }
 
 if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
   ## Always publish
-  make publish
   
+  make publish
+  if [ $? -ne 0 ]; then
+    echo "Failed to publish"
+    exit 1
+  fi
+
   if [ "${TRAVIS_BRANCH}" == "master" ]; then
     if [ "${NEW_VERSION}" == "true" ]; then
       # When the branch is master and the version has changed we need to
       #   1: Reconcile master with dev
       #   2: Create a new release tag
-      reconcile_dev
-      create_tag
+      reconcile_dev && create_tag
     else
       echo "Version unchanged: No publication actions taken."
     fi
