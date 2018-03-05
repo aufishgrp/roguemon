@@ -40,6 +40,7 @@ function reconcile_dev(){
     git remote add ci-build https://${GITHUB_KEY}@github.com/${GITHUB_DOMAIN}/${APP_NAME}.git > /dev/null 2>&1 && \
     git checkout master && \
     git pull && \
+    echo ${APP_VERSION} > APP_VERSION && \
     git add APP_VERSION && \
     git commit -m "${DEPLOYMAN_COMMIT_TAG} - Update version" && \
     git push --quiet --set-upstream ci-build master && \
