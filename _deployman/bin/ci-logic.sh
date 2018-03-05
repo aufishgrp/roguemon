@@ -37,18 +37,18 @@ function reconcile_dev(){
     #   1: Update the version file.
     #   2: Commit the result to master and update dev with master
     #   3: Push
-    git remote add ci-build https://${GITHUB_KEY}@github.com/${GITHUB_DOMAIN}/${APP_NAME}.git > /dev/null 2>&1 && \
-    git checkout master && \
-    git pull && \
-    echo ${APP_VERSION} > APP_VERSION && \
-    git add APP_VERSION && \
-    git commit -m "${DEPLOYMAN_COMMIT_TAG} - Update version" && \
-    git push --quiet --set-upstream ci-build master && \
-    git pull && \
-    git checkout dev && \
-    git pull && \
-    git merge master && \
-    git push --quiet --set-upstream ci-build dev && \
+    git remote add ci-build https://${GITHUB_KEY}@github.com/${GITHUB_DOMAIN}/${APP_NAME}.git > /dev/null 2>&1
+    git checkout master
+    git pull
+    echo ${APP_VERSION} > APP_VERSION
+    git add APP_VERSION
+    git commit -m "${DEPLOYMAN_COMMIT_TAG} - Update version"
+    git push --quiet --set-upstream ci-build master
+    git pull
+    git checkout dev
+    git pull
+    git merge master
+    git push --quiet --set-upstream ci-build dev
     git checkout master
 
     if [ $? -ne 0 ]; then
@@ -59,7 +59,7 @@ function reconcile_dev(){
 if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
   ## Always publish
   
-  make publish
+  #make publish
   if [ $? -ne 0 ]; then
     echo "Failed to publish"
     exit 1
