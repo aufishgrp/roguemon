@@ -59,6 +59,7 @@ docker-prod: docker-binary
 	docker build \
 		--build-arg APP_NAME=${APP_NAME} \
 		-t ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION} \
+		-t ${DOCKER_DOMAIN}/${APP_NAME}:${APP_VERSION2} \
 		-f _deployman/src/Dockerfile.deploy \
 		.
 
